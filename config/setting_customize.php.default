@@ -1,0 +1,15 @@
+<?php
+declare(strict_types=1);
+
+return [
+    'BcAuthGuard' => [
+        'limitWindowMinutes' => 10,
+        'limitCount' => 5,
+        'lockMinutes' => 10,
+        'enableIpBlock' => true,
+        'blockedIps' => [
+            // '192.0.2.10',
+            // '198.51.100.0/24',
+        ],
+    ],
+];
