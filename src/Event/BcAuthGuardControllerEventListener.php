@@ -70,6 +70,7 @@ class BcAuthGuardControllerEventListener extends BcControllerEventListener
 
             if ($request->is('post')) {
                 $this->service->recordBlockedIpDenied($prefix, $username, $ipAddress, $request, $context);
+                $this->recordRecentActivity(__d('baser_core', 'IP拒否によりログインを拒否しました。ログインID: {0}, IP: {1}', $username ?: '-', $ipAddress ?: '-'));
                 $controller->BcMessage->setError(__d('baser_core', '申し訳ありませんが、ログインを制限しています。'), true);
                 $event->setData('user', $request
                     ->withAttribute('BcAuthGuard.loginDenied', true)
@@ -89,6 +90,7 @@ class BcAuthGuardControllerEventListener extends BcControllerEventListener
                 'ip' => $ipAddress,
             ]);
             $this->service->recordLockoutDenied($prefix, $username, $ipAddress, $request, $context);
+            $this->recordRecentActivity(__d('baser_core', 'ロック中のためログインを拒否しました。ログインID: {0}, IP: {1}', $username ?: '-', $ipAddress ?: '-'));
             $controller->BcMessage->setError(__d('baser_core', '入力を一定回数誤ったためログインを制限しています。しばらくしてから再試行してください。'), true);
             $this->forceLogoutIfAuthenticated($controller);
             $event->setData('user', $request
@@ -133,6 +135,7 @@ class BcAuthGuardControllerEventListener extends BcControllerEventListener
             'lockedNow' => $lockedNow,
         ]);
         if ($lockedNow) {
+            $this->recordRecentActivity(__d('baser_core', 'ログイン失敗が規定回数に達したためロックを開始しました。ログインID: {0}, IP: {1}', $username ?: '-', $ipAddress ?: '-'));
             $controller->BcMessage->setError(__d('baser_core', 'ログイン失敗が規定回数に達したため、一定時間ログインを制限しました。'), true);
         }
     }
