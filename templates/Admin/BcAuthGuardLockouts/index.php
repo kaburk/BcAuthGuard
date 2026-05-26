@@ -5,8 +5,11 @@
  * @var array $statusList
  * @var array $prefixList
  */
+use Cake\Core\Configure;
+
 $this->BcAdmin->setTitle(__d('baser_core', 'ロック中一覧'));
 $this->BcAdmin->setSearch('BcAuthGuard.bc_auth_guard_lockouts_index');
+$releasedReasonLabels = (array) Configure::read('BcAuthGuard.releasedReasonLabels', []);
 ?>
 
 <table class="list-table bca-table-listup" id="ListTable">
@@ -34,16 +37,20 @@ $this->BcAdmin->setSearch('BcAuthGuard.bc_auth_guard_lockouts_index');
                 <td class="bca-table-listup__tbody-td">
                     <?php echo $lockout->locked_until ? $this->BcTime->format($lockout->locked_until, 'yyyy-MM-dd HH:mm:ss') : '' ?>
                 </td>
-                <td class="bca-table-listup__tbody-td"><?php echo h((string) $lockout->released_reason) ?></td>
+                <td class="bca-table-listup__tbody-td">
+                    <?php
+                    $releasedReason = (string) $lockout->released_reason;
+                    $releasedReasonLabel = (string) ($releasedReasonLabels[$releasedReason] ?? $releasedReason);
+                    echo h($releasedReasonLabel);
+                    ?>
+                </td>
                 <td class="bca-table-listup__tbody-td bca-table-listup__tbody-td--actions">
                     <?php
                     if ($lockout->locked_until && $lockout->locked_until > \Cake\I18n\FrozenTime::now()) {
-                        echo $this->BcAdminForm->postLink('', ['action' => 'release', $lockout->id], [
+                        echo $this->BcAdminForm->postLink(__d('baser_core', '解除'), ['action' => 'release', $lockout->id], [
                             'confirm' => __d('baser_core', 'ロック情報 No.{0} を解除してもよろしいですか？', $lockout->id),
                             'title' => __d('baser_core', '解除'),
-                            'class' => 'btn-delete bca-btn-icon',
-                            'data-bca-btn-type' => 'delete',
-                            'data-bca-btn-size' => 'lg',
+                            'class' => 'bca-btn',
                         ]);
                     }
                     ?>

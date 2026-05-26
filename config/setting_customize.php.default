@@ -11,5 +11,9 @@ return [
             // '192.0.2.10',
             // '198.51.100.0/24',
         ],
+        'releasedReasonLabels' => [
+            'manual_release' => '手動解除',
+            'login_success' => 'ログイン成功',
+        ],
     ],
 ];

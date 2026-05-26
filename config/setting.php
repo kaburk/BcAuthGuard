@@ -50,6 +50,11 @@ $config = [
         'enableIpBlock' => true,
         // 単体IPまたはCIDRで拒否するIPリスト
         'blockedIps' => [],
+        // 解除理由コードの表示ラベル
+        'releasedReasonLabels' => [
+            'manual_release' => __d('baser_core', '手動解除'),
+            'login_success' => __d('baser_core', 'ログイン成功'),
+        ],
     ],
 ];
 
