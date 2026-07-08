@@ -70,26 +70,6 @@ BcAuthGuard は、baserCMS 5 の管理画面ログインに対して試行制限
 
 通常のログイン成功 / ログアウトの監査ログは BcAuthCommon 側で処理します。
 
-## 詳細ドキュメント
-
-- 認証プラグイン全体整理: [../BcAuthCommon/docs/auth-plugin-spec-summary.md](../BcAuthCommon/docs/auth-plugin-spec-summary.md)
-- 認証共通アーキテクチャ: [../BcAuthCommon/docs/auth-common-architecture.md](../BcAuthCommon/docs/auth-common-architecture.md)
-
-## よく参照する実装ファイル（入口）
-
-- [src/Event/BcAuthGuardControllerEventListener.php](src/Event/BcAuthGuardControllerEventListener.php)
-- [src/Service/BcAuthGuardService.php](src/Service/BcAuthGuardService.php)
-- [src/Service/BcAuthGuardSettingsService.php](src/Service/BcAuthGuardSettingsService.php)
-- [src/Controller/Admin/BcAuthGuardConfigsController.php](src/Controller/Admin/BcAuthGuardConfigsController.php)
-- [src/Controller/Admin/BcAuthGuardLockoutsController.php](src/Controller/Admin/BcAuthGuardLockoutsController.php)
-- [config/Migrations/20260425000000_Initial.php](config/Migrations/20260425000000_Initial.php)
-
-## 開発メモ
-
-- 監査ログは BcAuthCommon の AuthLoginLogService を利用して共通テーブルへ集約する
-- 通常の login_success / logout は BcAuthCommon 側の処理に委譲する
-- ロック運用（検索・手動解除）は BcAuthGuard 側の管理画面で提供する
-
 ## 関連プラグイン
 
 - [../BcAuthCommon/README.md](../BcAuthCommon/README.md)
