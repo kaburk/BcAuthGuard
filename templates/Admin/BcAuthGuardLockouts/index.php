@@ -58,7 +58,7 @@ $releasedReasonLabels = (array) Configure::read('BcAuthGuard.releasedReasonLabel
                 </td>
                 <td class="bca-table-listup__tbody-td bca-table-listup__tbody-td--actions">
                     <?php
-                    if ($lockout->locked_until && $lockout->locked_until > \Cake\I18n\FrozenTime::now()) {
+                    if ($lockout->locked_until && $lockout->locked_until > \Cake\I18n\DateTime::now()) {
                         echo $this->BcAdminForm->postLink(__d('baser_core', '解除'), ['action' => 'release', $lockout->id], [
                             'confirm' => __d('baser_core', 'ロック情報 No.{0} を解除してもよろしいですか？', $lockout->id),
                             'title' => __d('baser_core', '解除'),

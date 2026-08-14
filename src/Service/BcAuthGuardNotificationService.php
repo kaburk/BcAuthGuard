@@ -6,7 +6,7 @@ namespace BcAuthGuard\Service;
 use BaserCore\Utility\BcSiteConfig;
 use BcAuthGuard\Mailer\BcAuthGuardMailer;
 use Cake\Core\Configure;
-use Cake\I18n\FrozenTime;
+use Cake\I18n\DateTime;
 use Cake\Log\Log;
 use Cake\Mailer\MailerAwareTrait;
 
@@ -88,7 +88,7 @@ class BcAuthGuardNotificationService
                     __d('baser_core', 'サイト名') => (string) BcSiteConfig::get('name'),
                     __d('baser_core', 'ログインID') => $username !== '' ? $username : '-',
                     __d('baser_core', 'IPアドレス') => $ipAddress !== '' ? $ipAddress : '-',
-                    __d('baser_core', '発生日時') => FrozenTime::now()->i18nFormat('yyyy-MM-dd HH:mm:ss'),
+                    __d('baser_core', '発生日時') => DateTime::now()->i18nFormat('yyyy-MM-dd HH:mm:ss'),
                 ],
                 'footer' => __d('baser_core', '本メールは認証ガードの自動通知です。'),
             ];

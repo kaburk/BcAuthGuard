@@ -7,7 +7,7 @@ use BaserCore\Utility\BcSiteConfig;
 use BaserCore\View\Helper\BcCsvHelper;
 use BcAuthGuard\Service\BcAuthGuardService;
 use Cake\Core\Configure;
-use Cake\I18n\FrozenTime;
+use Cake\I18n\DateTime;
 use Cake\View\View;
 
 class BcAuthGuardLockoutsController extends BcAuthGuardAdminAppController
@@ -55,12 +55,12 @@ class BcAuthGuardLockoutsController extends BcAuthGuardAdminAppController
     public function download()
     {
         $releasedReasonLabels = (array) Configure::read('BcAuthGuard.releasedReasonLabels', []);
-        $now = FrozenTime::now();
+        $now = DateTime::now();
         $rows = $this->createIndexQuery()->limit(self::CSV_MAX_ROWS)->all();
 
         $datas = [];
         foreach ($rows as $lockout) {
-            $lockedUntil = $lockout->locked_until ? new FrozenTime($lockout->locked_until) : null;
+            $lockedUntil = $lockout->locked_until ? new DateTime($lockout->locked_until) : null;
             $status = ($lockedUntil && $lockedUntil > $now)
                 ? __d('baser_core', 'ロック中')
                 : __d('baser_core', '解除済み');

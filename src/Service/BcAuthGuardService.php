@@ -5,7 +5,7 @@ namespace BcAuthGuard\Service;
 
 use BcAuthCommon\Service\AuthLoginLogService;
 use Cake\Core\Configure;
-use Cake\I18n\FrozenTime;
+use Cake\I18n\DateTime;
 use Cake\Http\ServerRequest;
 use Cake\ORM\Table;
 use Cake\ORM\Query\SelectQuery;
@@ -48,12 +48,12 @@ class BcAuthGuardService
         if (!$lockout || !$lockout->locked_until) {
             return false;
         }
-        return new FrozenTime($lockout->locked_until) > FrozenTime::now();
+        return new DateTime($lockout->locked_until) > DateTime::now();
     }
 
     public function recordFailure(string $prefix, string $username, string $ipAddress, ?ServerRequest $request = null, array $context = []): bool
     {
-        $now = FrozenTime::now();
+        $now = DateTime::now();
         $windowMinutes = (int) Configure::read('BcAuthGuard.limitWindowMinutes', 10);
         $limitCount = (int) Configure::read('BcAuthGuard.limitCount', 5);
         $lockMinutes = (int) Configure::read('BcAuthGuard.lockMinutes', 10);
@@ -68,7 +68,7 @@ class BcAuthGuardService
             ]);
         }
 
-        $windowStart = $lockout->window_started ? new FrozenTime($lockout->window_started) : null;
+        $windowStart = $lockout->window_started ? new DateTime($lockout->window_started) : null;
         if (!$windowStart || $windowStart < $now->subMinutes($windowMinutes)) {
             $lockout->failed_count = 1;
             $lockout->window_started = $now;
@@ -96,7 +96,7 @@ class BcAuthGuardService
         if (!$lockout) {
             return false;
         }
-        $wasLocked = !empty($lockout->locked_until) && new FrozenTime($lockout->locked_until) > FrozenTime::now();
+        $wasLocked = !empty($lockout->locked_until) && new DateTime($lockout->locked_until) > DateTime::now();
         $lockout->failed_count = 0;
         $lockout->window_started = null;
         $lockout->last_failed_at = null;
@@ -135,7 +135,7 @@ class BcAuthGuardService
     public function getLockoutsQuery(array $conditions = []): SelectQuery
     {
         $query = $this->lockouts->find()
-            ->order(['BcAuthGuardLockouts.modified' => 'DESC', 'BcAuthGuardLockouts.id' => 'DESC']);
+            ->orderBy(['BcAuthGuardLockouts.modified' => 'DESC', 'BcAuthGuardLockouts.id' => 'DESC']);
 
         if (!empty($conditions['prefix'])) {
             $query->where(['BcAuthGuardLockouts.prefix' => (string) $conditions['prefix']]);
@@ -148,12 +148,12 @@ class BcAuthGuardService
         }
         if (!empty($conditions['status'])) {
             if ($conditions['status'] === 'locked') {
-                $query->where(['BcAuthGuardLockouts.locked_until >' => FrozenTime::now()]);
+                $query->where(['BcAuthGuardLockouts.locked_until >' => DateTime::now()]);
             } elseif ($conditions['status'] === 'released') {
                 $query->where([
                     'OR' => [
                         ['BcAuthGuardLockouts.locked_until IS' => null],
-                        ['BcAuthGuardLockouts.locked_until <=' => FrozenTime::now()],
+                        ['BcAuthGuardLockouts.locked_until <=' => DateTime::now()],
                     ]
                 ]);
             }
@@ -176,7 +176,7 @@ class BcAuthGuardService
             return 0;
         }
 
-        $now = FrozenTime::now();
+        $now = DateTime::now();
         $threshold = $now->subDays($days);
 
         return (int) $this->lockouts->deleteAll([
