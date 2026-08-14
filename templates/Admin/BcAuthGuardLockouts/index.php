@@ -12,6 +12,18 @@ $this->BcAdmin->setSearch('BcAuthGuard.bc_auth_guard_lockouts_index');
 $releasedReasonLabels = (array) Configure::read('BcAuthGuard.releasedReasonLabels', []);
 ?>
 
+<div class="bca-data-list__top">
+    <div class="bca-action-table-listup">
+        <?php echo $this->BcHtml->link(__d('baser_core', 'CSV出力'), ['action' => 'download', '?' => $this->getRequest()->getQueryParams()], [
+            'class' => 'bca-btn',
+            'data-bca-btn-type' => 'save'
+        ]) ?>
+    </div>
+    <div class="bca-data-list__sub">
+        <?php $this->BcBaser->element('pagination') ?>
+    </div>
+</div>
+
 <table class="list-table bca-table-listup" id="ListTable">
     <thead class="bca-table-listup__thead">
     <tr>

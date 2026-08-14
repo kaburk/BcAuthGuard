@@ -22,6 +22,12 @@ return [
                     'method' => '*',
                     'auth' => false,
                 ],
+                'Purge' => [
+                    'title' => __d('baser_core', '保持期間ポリシーの手動実行'),
+                    'url' => '/baser/admin/bc-auth-guard/bc_auth_guard_configs/purge',
+                    'method' => 'POST',
+                    'auth' => false,
+                ],
             ]
         ],
         'BcAuthGuardLockoutsAdmin' => [
@@ -33,6 +39,12 @@ return [
                     'title' => __d('baser_core', '一覧'),
                     'url' => '/baser/admin/bc-auth-guard/bc_auth_guard_lockouts/index',
                     'method' => '*',
+                    'auth' => false,
+                ],
+                'Download' => [
+                    'title' => __d('baser_core', 'CSV出力'),
+                    'url' => '/baser/admin/bc-auth-guard/bc_auth_guard_lockouts/download',
+                    'method' => 'GET',
                     'auth' => false,
                 ],
                 'Release' => [

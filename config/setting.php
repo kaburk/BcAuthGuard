@@ -50,6 +50,20 @@ $config = [
         'enableIpBlock' => true,
         // 単体IPまたはCIDRで拒否するIPリスト
         'blockedIps' => [],
+        // 保持期間ポリシー: 自動削除を有効にするか
+        'autoPurgeEnabled' => false,
+        // 認証ログの保持日数（この日数を過ぎたログを削除）
+        'logRetentionDays' => 90,
+        // 解除済みロック情報の保持日数（この日数を過ぎたレコードを削除）
+        'lockoutRetentionDays' => 30,
+        // 通知: 通知機能を有効にするか
+        'notifyEnabled' => false,
+        // 通知: ロック開始を通知するか
+        'notifyLockoutStarted' => true,
+        // 通知: IP拒否を通知するか
+        'notifyBlockedIp' => false,
+        // 通知先メールアドレス（複数可）
+        'notifyEmails' => [],
         // 解除理由コードの表示ラベル
         'releasedReasonLabels' => [
             'manual_release' => __d('baser_core', '手動解除'),

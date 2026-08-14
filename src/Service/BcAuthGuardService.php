@@ -162,6 +162,48 @@ class BcAuthGuardService
         return $query;
     }
 
+    /**
+     * 保持期間を過ぎた解除済みロック情報を削除する。
+     *
+     * 現在ロック中（locked_until が未来）のレコードは削除対象外とする。
+     *
+     * @param int $days 保持日数（0以下の場合は何もしない）
+     * @return int 削除件数
+     */
+    public function purgeReleasedLockouts(int $days): int
+    {
+        if ($days <= 0) {
+            return 0;
+        }
+
+        $now = FrozenTime::now();
+        $threshold = $now->subDays($days);
+
+        return (int) $this->lockouts->deleteAll([
+            'modified <' => $threshold,
+            'OR' => [
+                ['locked_until IS' => null],
+                ['locked_until <=' => $now],
+            ],
+        ]);
+    }
+
+    /**
+     * 設定の保持期間ポリシーに基づき、認証ログと解除済みロック情報を削除する。
+     *
+     * @return array{logs:int, lockouts:int} 削除件数
+     */
+    public function purgeByRetentionPolicy(): array
+    {
+        $logRetentionDays = (int) Configure::read('BcAuthGuard.logRetentionDays', 90);
+        $lockoutRetentionDays = (int) Configure::read('BcAuthGuard.lockoutRetentionDays', 30);
+
+        return [
+            'logs' => AuthLoginLogService::purge($logRetentionDays),
+            'lockouts' => $this->purgeReleasedLockouts($lockoutRetentionDays),
+        ];
+    }
+
     public function releaseLockout(int $id, string $reason = 'manual_release'): bool
     {
         $lockout = $this->lockouts->find()->where(['id' => $id])->first();

@@ -7,6 +7,7 @@ use BcAuthCommon\Service\AuthLoginLogService;
 use BaserCore\Event\BcControllerEventListener;
 use BaserCore\Model\Table\LoginStoresTable;
 use BaserCore\Service\DblogsService;
+use BcAuthGuard\Service\BcAuthGuardNotificationService;
 use BcAuthGuard\Service\BcAuthGuardService;
 use Cake\Core\Configure;
 use Cake\Event\EventInterface;
@@ -25,11 +26,13 @@ class BcAuthGuardControllerEventListener extends BcControllerEventListener
     ];
 
     private BcAuthGuardService $service;
+    private BcAuthGuardNotificationService $notificationService;
 
     public function __construct()
     {
         parent::__construct();
         $this->service = new BcAuthGuardService();
+        $this->notificationService = new BcAuthGuardNotificationService();
     }
 
     public function baserCoreUsersBeforeLogin(EventInterface $event): void
@@ -71,6 +74,7 @@ class BcAuthGuardControllerEventListener extends BcControllerEventListener
             if ($request->is('post')) {
                 $this->service->recordBlockedIpDenied($prefix, $username, $ipAddress, $request, $context);
                 $this->recordRecentActivity(__d('baser_core', 'IP拒否によりログインを拒否しました。ログインID: {0}, IP: {1}', $username ?: '-', $ipAddress ?: '-'));
+                $this->notificationService->notifyBlockedIp($username, $ipAddress);
                 $controller->BcMessage->setError(__d('baser_core', '申し訳ありませんが、ログインを制限しています。'), true);
                 $event->setData('user', $request
                     ->withAttribute('BcAuthGuard.loginDenied', true)
@@ -136,6 +140,7 @@ class BcAuthGuardControllerEventListener extends BcControllerEventListener
         ]);
         if ($lockedNow) {
             $this->recordRecentActivity(__d('baser_core', 'ログイン失敗が規定回数に達したためロックを開始しました。ログインID: {0}, IP: {1}', $username ?: '-', $ipAddress ?: '-'));
+            $this->notificationService->notifyLockoutStarted($username, $ipAddress);
             $controller->BcMessage->setError(__d('baser_core', 'ログイン失敗が規定回数に達したため、一定時間ログインを制限しました。'), true);
         }
     }

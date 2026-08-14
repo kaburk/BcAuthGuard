@@ -66,4 +66,13 @@ class BcAuthGuardServiceTest extends BcTestCase
         $this->assertFalse($this->execPrivateMethod($this->service, 'matchCidr', ['192.0.2.10', '192.0.2.0/99']));
         $this->assertFalse($this->execPrivateMethod($this->service, 'matchCidr', ['192.0.2.10', '2001:db8::/32']));
     }
+
+    /**
+     * 保持日数が0以下の場合はDBに触れず0件を返すこと
+     */
+    public function testPurgeReleasedLockoutsWithNonPositiveDays(): void
+    {
+        $this->assertSame(0, $this->service->purgeReleasedLockouts(0));
+        $this->assertSame(0, $this->service->purgeReleasedLockouts(-1));
+    }
 }

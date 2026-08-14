@@ -27,6 +27,11 @@ BcAuthGuard は、baserCMS 5 の管理画面ログインに対して試行制限
 	- ロック中拒否
 	- IP拒否
 	- ログイン成功による制限解除
+- ロック開始 / IP拒否発生時のメール通知（任意）
+- ロック中一覧の CSV 出力（検索条件を引き継ぎ）
+- 保持期間ポリシーに基づく認証ログ・解除済みロック情報の自動削除
+	- コマンド（`bin/cake bc_auth_guard purge`）による定期実行
+	- 設定画面からの手動実行
 
 ## 前提
 
@@ -42,6 +47,28 @@ BcAuthGuard は、baserCMS 5 の管理画面ログインに対して試行制限
 	- Plugins > ロック中一覧
 	- 検索条件: 状態 / プレフィックス / ログインID / IPアドレス
 	- ロック中レコードの手動解除
+	- 検索条件を引き継いだ CSV 出力
+
+## 保持期間ポリシーと自動削除
+
+- 認証ログ（`bc_auth_login_logs`）と解除済みロック情報を保持日数で自動削除します。
+	- `logRetentionDays`: 認証ログの保持日数（0で無効）
+	- `lockoutRetentionDays`: 解除済みロック情報の保持日数（0で無効）
+	- ロック中のレコードは削除対象外です。
+- 実行方法
+	- コマンド: `bin/cake bc_auth_guard purge`
+		- `autoPurgeEnabled` が有効な場合のみ実行（`--force` で強制実行）
+		- cron 等で定期実行してください
+	- 手動: 認証ガード設定画面の「今すぐ削除を実行」
+
+## メール通知
+
+- ロック開始 / IP拒否発生時に、指定アドレスへメールを送信します。
+	- `notifyEnabled`: 通知の有効化
+	- `notifyLockoutStarted`: ロック開始を通知
+	- `notifyBlockedIp`: IP拒否を通知
+	- `notifyEmails`: 通知先メールアドレス（複数可）
+- 送信失敗は認証フローを止めず、ログに記録します。
 
 ## 設定の要点
 
@@ -55,6 +82,13 @@ BcAuthGuard は、baserCMS 5 の管理画面ログインに対して試行制限
 - `lockMinutes`: 10
 - `enableIpBlock`: true
 - `blockedIps`: []
+- `autoPurgeEnabled`: false
+- `logRetentionDays`: 90
+- `lockoutRetentionDays`: 30
+- `notifyEnabled`: false
+- `notifyLockoutStarted`: true
+- `notifyBlockedIp`: false
+- `notifyEmails`: []
 
 `blockedIps` の設定例:
 
